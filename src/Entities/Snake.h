@@ -29,6 +29,7 @@ public:
     void changeDirection(Direction d);
     void checkSelfCrash();
     void grow();
+    void loseFat();
     bool isCrashed()
     {
         return this->crashed;

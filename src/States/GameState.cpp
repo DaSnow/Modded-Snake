@@ -56,13 +56,14 @@ void GameState::draw()
 //--------------------------------------------------------------
 void GameState::keyPressed(int key)
 {
-
-    if (key != OF_KEY_LEFT && key != OF_KEY_RIGHT && key != OF_KEY_UP && key != OF_KEY_DOWN)
+    switch (key) // For letter keys
     {
-        return;
+    case 'u':
+        snake->loseFat();
+        break;
     }
 
-    switch (key)
+    switch (key) // For arrow keys
     {
     case OF_KEY_LEFT:
         snake->changeDirection(LEFT);
@@ -75,6 +76,9 @@ void GameState::keyPressed(int key)
         break;
     case OF_KEY_DOWN:
         snake->changeDirection(DOWN);
+        break;
+    case NONE:
+        return;
         break;
     }
 }

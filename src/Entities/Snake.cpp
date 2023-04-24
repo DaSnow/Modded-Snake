@@ -55,7 +55,7 @@ void Snake::update()
 
     int prevX = oldHead[0];
     int prevY = oldHead[1];
-    for (int i = 1; i < this->body.size(); i++)
+    for (unsigned int i = 1; i < this->body.size(); i++)
     {
         int currX = this->body[i][0];
         int currY = this->body[i][1];
@@ -68,9 +68,15 @@ void Snake::update()
     checkSelfCrash();
 }
 
+void Snake::loseFat()
+{
+    if (body.size() > 2)
+        body.pop_back();
+}
+
 void Snake::draw()
 {
-    for (int i = 0; i < body.size(); i++)
+    for (unsigned int i = 0; i < body.size(); i++)
     {
         int curX = this->body[i][0];
         int curY = this->body[i][1];
@@ -105,7 +111,7 @@ void Snake::checkSelfCrash()
 {
     std::vector<std::vector<int>> snake = this->body;
     vector<int> head = snake[0];
-    for (int i = 1; i < snake.size(); i++)
+    for (unsigned int i = 1; i < snake.size(); i++)
     {
         if (head[0] == snake[i][0] and head[1] == snake[i][1])
         {
