@@ -3,7 +3,8 @@
 #include "State.h"
 #include "ofMain.h"
 
-class MenuState : public State {
+class MenuState : public State
+{
 
 public:
     MenuState();
@@ -12,5 +13,4 @@ public:
     void update();
     void draw();
     void keyPressed(int key);
-
 };
