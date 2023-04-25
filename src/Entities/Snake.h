@@ -14,13 +14,16 @@ class Snake
 {
 
 private:
-    std::vector<std::vector<int>> body;
-    Direction direction;
     int boardSizeWidth, boardSizeHeight;
-    int segmentSize;
     bool crashed;
 
+protected:
+
 public:
+    std::vector<std::vector<int>> body;
+    Direction direction;
+    int segmentSize;
+    
     Snake(int segmentSize, int boardSizeW, int boardSizeH);
     ~Snake();
 
@@ -44,7 +47,7 @@ public:
     {
         return this->body[this->body.size() - 1];
     }
-    
+
     std::vector<std::vector<int>> getBody()
     {
         return this->body;

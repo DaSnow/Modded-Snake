@@ -44,6 +44,9 @@ void Snake::update()
     {
         this->body[0][1] -= 1;
         break;
+    }case NONE:
+    {
+        break;
     }
     }
 

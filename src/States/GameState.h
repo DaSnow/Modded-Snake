@@ -3,6 +3,7 @@
 #include "State.h"
 #include "Snake.h"
 #include "ofMain.h"
+#include "PauseState.h"
 
 class GameState : public State
 {
@@ -23,8 +24,8 @@ public:
 
     bool foodSpawned = false;
 
-    int currentFoodX;
-    int currentFoodY;
+    int xPos;
+    int yPos;
 
     int boardSizeWidth, boardSizeHeight;
     int cellSize; // Pixels

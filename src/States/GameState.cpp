@@ -3,10 +3,10 @@
 //--------------------------------------------------------------
 GameState::GameState()
 {
-    foodSpawned = false;
     cellSize = 25;
     boardSizeWidth = 64;
     boardSizeHeight = 36;
+    foodSpawned = false;
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
 }
 //--------------------------------------------------------------
@@ -26,7 +26,6 @@ void GameState::reset()
 //--------------------------------------------------------------
 void GameState::update()
 {
-
     if (snake->isCrashed())
     {
         this->setNextState("MenuState");
@@ -34,7 +33,7 @@ void GameState::update()
         return;
     }
 
-    if (snake->getHead()[0] == currentFoodX && snake->getHead()[1] == currentFoodY)
+    if (snake->getHead()[0] == xPos && snake->getHead()[1] == yPos)
     {
         snake->grow();
         foodSpawned = false;
@@ -60,6 +59,11 @@ void GameState::keyPressed(int key)
     {
     case 'u':
         snake->loseFat();
+        break;
+    case 'p':
+        this->setNextState("PauseState");
+        this->setFinished(true);
+        return;
         break;
     }
 
@@ -91,11 +95,11 @@ void GameState::foodSpawner()
         do
         {
             isInSnakeBody = false;
-            currentFoodX = ofRandom(1, boardSizeWidth - 1);
-            currentFoodY = ofRandom(1, boardSizeHeight - 1);
+            xPos = ofRandom(1, boardSizeWidth - 1);
+            yPos = ofRandom(1, boardSizeHeight - 1);
             for (unsigned int i = 0; i < snake->getBody().size(); i++)
             {
-                if (currentFoodX == snake->getBody()[i][0] and currentFoodY == snake->getBody()[i][1])
+                if (xPos == snake->getBody()[i][0] and yPos == snake->getBody()[i][1])
                 {
                     isInSnakeBody = true;
                 }
@@ -110,7 +114,7 @@ void GameState::drawFood()
     ofSetColor(ofColor::red);
     if (foodSpawned)
     {
-        ofDrawRectangle(currentFoodX * cellSize, currentFoodY * cellSize, cellSize, cellSize);
+        ofDrawRectangle(xPos * cellSize, yPos * cellSize, cellSize, cellSize);
     }
 }
 //--------------------------------------------------------------
@@ -126,13 +130,9 @@ void GameState::drawStartScreen()
 //--------------------------------------------------------------
 void GameState::drawLostScreen()
 {
-    ofSetColor(ofColor::black);
-    ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-    ofSetColor(ofColor::white);
-    string text = "You lost! Press any arrow key to play again";
-    string text2 = "or press ESC to exit.";
-    ofDrawBitmapString(text, ofGetWidth() / 2 - 8 * text.length() / 2, ofGetHeight() / 2 - 11);
-    ofDrawBitmapString(text2, ofGetWidth() / 2 - 8 * text2.length() / 2, ofGetHeight() / 2 + 2);
+    reset();
+    this->setNextState("LoseState");
+    this->setFinished(true);
     return;
 }
 //--------------------------------------------------------------
