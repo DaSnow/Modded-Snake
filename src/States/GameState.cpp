@@ -22,13 +22,14 @@ void GameState::reset()
     foodSpawned = false;
     setFinished(false);
     setNextState("");
+    GameState::score=0; //es para que vuelva a 0 cada vez que empieza un juego nuevo
 }
 //--------------------------------------------------------------
 void GameState::update()
 {
     if (snake->isCrashed())
     {
-        this->setNextState("MenuState");
+        this->setNextState("LoseState");
         this->setFinished(true);
         return;
     }
@@ -37,6 +38,7 @@ void GameState::update()
     {
         snake->grow();
         foodSpawned = false;
+        GameState::score +=10; //increase the score + 10
     }
 
     foodSpawner();
@@ -51,6 +53,10 @@ void GameState::draw()
     drawBoardGrid();
     snake->draw();
     drawFood();
+    // Display the score on the screen
+    ofSetColor(ofColor::white);
+    string scoreStr = "Score: " + ofToString(GameState::score);
+    ofDrawBitmapString(scoreStr, 20, 30);
 }
 //--------------------------------------------------------------
 void GameState::keyPressed(int key)
@@ -148,3 +154,5 @@ void GameState::drawBoardGrid()
     // }
 }
 //--------------------------------------------------------------
+
+int GameState::score=0;

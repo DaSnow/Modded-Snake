@@ -27,8 +27,10 @@ void LoseState::draw()
     ofSetColor(ofColor::white);
     string text = "You lost! Press any arrow key to play again";
     string text2 = "or press ESC to exit.";
+    string text3 = "Score: " + ofToString(GameState::score);
     ofDrawBitmapString(text, ofGetWidth() / 2 - 8 * text.length() / 2, ofGetHeight() / 2 - 11);
     ofDrawBitmapString(text2, ofGetWidth() / 2 - 8 * text2.length() / 2, ofGetHeight() / 2 + 2);
+    ofDrawBitmapString(text3, ofGetWidth() / 2 - 8 * text2.length() / 2 + 40, ofGetHeight() / 2 - 22);
     return;
 }
 //--------------------------------------------------------------

@@ -29,4 +29,5 @@ public:
 
     int boardSizeWidth, boardSizeHeight;
     int cellSize; // Pixels
+    static int score;
 };
