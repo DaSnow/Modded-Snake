@@ -8,7 +8,7 @@
 #   The location of your root openFrameworks installation
 #       (default) OF_ROOT = ../../.. 
 ################################################################################
-# OF_ROOT = C:\oF\of_v20230306_msys2_mingw64_release
+# OF_ROOT = ../../..
 
 ################################################################################
 # PROJECT ROOT
@@ -115,7 +115,7 @@
 #
 #   Note: Leave a leading space when adding list items with the += operator
 ################################################################################
-# PROJECT_CFLAGS = 
+PROJECT_CFLAGS = -g
 
 ################################################################################
 # PROJECT OPTIMIZATION CFLAGS
@@ -150,4 +150,3 @@
 ################################################################################
 # PROJECT_CXX = 
 # PROJECT_CC = 
-
