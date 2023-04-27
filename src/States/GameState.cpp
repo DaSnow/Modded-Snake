@@ -71,6 +71,8 @@ void GameState::keyPressed(int key)
         this->setFinished(true);
         return;
         break;
+    case 'a':
+        GameState::score +=10;
     }
 
     switch (key) // For arrow keys
