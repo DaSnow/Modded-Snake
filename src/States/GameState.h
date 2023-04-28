@@ -24,6 +24,10 @@ public:
 
     bool foodSpawned = false;
 
+    int red = 255;
+    int green = 0;
+    int blue = 0;
+
     int xPos;
     int yPos;
 
