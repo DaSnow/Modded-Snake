@@ -40,6 +40,12 @@ void GameState::update()
     }
 
     foodSpawner();
+
+    if (ofGetFrameNum() % 1 == 0)
+    {
+        rotCounter += 1;
+    }
+    
     if (ofGetFrameNum() % 10 == 0)
     {
         snake->update();
@@ -50,13 +56,13 @@ void GameState::draw()
 {
     drawBoardGrid();
     snake->draw();
-    if (ofGetFrameNum() % 60 == 0)
+    if (rotCounter % 60 == 0)
     {
         red -= 4;
         green += 3;
     }
     drawFood();
-    if (ofGetFrameNum() % 1800 == 0)
+    if (rotCounter % 1800 == 0)
         foodSpawned = false;
 }
 //--------------------------------------------------------------
@@ -115,12 +121,14 @@ void GameState::foodSpawner()
         foodSpawned = true;
         red = 255;
         green = 0;
+
+        rotCounter = 0;
     }
 }
 //--------------------------------------------------------------
 void GameState::drawFood()
 {
-    ofSetColor(red, green, blue);
+    ofSetColor(red, green, 0);
     if (foodSpawned)
     {
         ofDrawRectangle(xPos * cellSize, yPos * cellSize, cellSize, cellSize);
