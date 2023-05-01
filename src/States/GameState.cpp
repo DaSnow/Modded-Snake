@@ -95,13 +95,13 @@ void GameState::draw()
 {
     drawBoardGrid();
     snake->draw();
-    if (rotCounter % 60 == 0) // 1 second
+    if (fruitType == NORMAL && rotCounter % 60 == 0) // 1 second
     {
         red -= 4;
         green += 3;
     }
     drawFood();
-    if (rotCounter % 1800 == 0) // 30 seconds
+    if (fruitType == NORMAL && rotCounter % 1800 == 0) // 30 seconds
         foodSpawned = false;
 }
 //--------------------------------------------------------------
@@ -202,7 +202,22 @@ void GameState::powerUpStorage()
 //--------------------------------------------------------------
 void GameState::drawFood()
 {
-    ofSetColor(red, green, 0);
+    switch (fruitType) // Set color for different fruit
+    {
+        case NORMAL:
+           ofSetColor(red, green, 0);
+            break;
+        case SPEED:
+           ofSetColor(ofColor::cyan);
+            break;
+        case DOUBLE:
+           ofSetColor(ofColor::plum);
+           break;
+        case GOD:
+           ofSetColor(ofColor::goldenRod);
+            break;
+    }
+
     if (foodSpawned)
     {
         ofDrawRectangle(xPos * cellSize, yPos * cellSize, cellSize, cellSize);
