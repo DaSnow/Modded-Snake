@@ -20,6 +20,7 @@ void GameState::reset()
     delete snake;
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
     foodSpawned = false;
+    sonicMode = false;
     setFinished(false);
     setNextState("");
 }
@@ -35,8 +36,26 @@ void GameState::update()
 
     if (snake->getHead()[0] == xPos && snake->getHead()[1] == yPos)
     {
-        snake->grow();
         foodSpawned = false;
+
+        switch (fruitType)
+        {
+        case NORMAL:
+            snake->grow();
+            break;
+        case SPEED:
+            sonicMode = true;
+            speedCounter = 0;
+            break;
+        case DOUBLE:
+            snake->grow();
+            snake->grow();
+            break;
+        case GOD:
+            snake->godMode = true;
+            godCounter = 0;
+            break;
+        }
     }
 
     foodSpawner();
@@ -44,11 +63,31 @@ void GameState::update()
     if (ofGetFrameNum() % 1 == 0)
     {
         rotCounter += 1;
+        speedCounter += 1;
+        godCounter += 1;
     }
 
-    if (ofGetFrameNum() % 10 == 0)
+    if (sonicMode)
     {
-        snake->update();
+        if (ofGetFrameNum() % 5 == 0)
+            snake->update();
+    }
+    else
+    {
+        if (ofGetFrameNum() % 10 == 0)
+            snake->update();
+    }
+
+    if (speedCounter % 900 == 0)
+    {
+        sonicMode = false;
+
+    }
+
+    if (godCounter % 600 == 0)
+    {
+        snake->godMode = false;
+        godCounter = 0;
     }
 }
 //--------------------------------------------------------------
@@ -56,13 +95,13 @@ void GameState::draw()
 {
     drawBoardGrid();
     snake->draw();
-    if (rotCounter % 60 == 0)
+    if (rotCounter % 60 == 0) // 1 second
     {
         red -= 4;
         green += 3;
     }
     drawFood();
-    if (rotCounter % 1800 == 0)
+    if (rotCounter % 1800 == 0) // 30 seconds
         foodSpawned = false;
 }
 //--------------------------------------------------------------
@@ -119,6 +158,7 @@ void GameState::foodSpawner()
             }
         } while (isInSnakeBody);
         foodSpawned = true;
+        fruitType = ofRandom(0, 4); // To be changed to implement activation conditions
         red = 255;
         green = 0;
 

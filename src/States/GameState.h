@@ -5,6 +5,14 @@
 #include "ofMain.h"
 #include "PauseState.h"
 
+enum FruitType
+{
+    NORMAL,
+    SPEED,
+    DOUBLE,
+    GOD
+};
+
 class GameState : public State
 {
 public:
@@ -23,8 +31,12 @@ public:
     Snake *snake;
 
     bool foodSpawned = false;
+    int fruitType;
 
     int rotCounter = 0;
+    bool sonicMode = false;
+    int speedCounter = 0;
+    int godCounter = 0;
 
     int red = 255;
     int green = 0;
