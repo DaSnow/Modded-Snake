@@ -28,7 +28,7 @@ void GameState::update()
 {
     if (snake->isCrashed())
     {
-        this->setNextState("MenuState");
+        this->setNextState("LoseState");
         this->setFinished(true);
         return;
     }
@@ -45,7 +45,7 @@ void GameState::update()
     {
         rotCounter += 1;
     }
-    
+
     if (ofGetFrameNum() % 10 == 0)
     {
         snake->update();
