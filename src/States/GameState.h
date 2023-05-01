@@ -23,6 +23,7 @@ public:
     void draw();
     void keyPressed(int key);
     void foodSpawner();
+    void powerUpStorage();
     void drawFood();
     void drawStartScreen();
     void drawLostScreen();
@@ -37,6 +38,9 @@ public:
     bool sonicMode = false;
     int speedCounter = 0;
     int godCounter = 0;
+
+    int storeCounter;
+    int powerMode;
 
     int red = 255;
     int green = 0;

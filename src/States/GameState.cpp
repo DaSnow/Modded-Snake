@@ -21,6 +21,8 @@ void GameState::reset()
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
     foodSpawned = false;
     sonicMode = false;
+    storeCounter = 0;
+    powerMode = 0;
     setFinished(false);
     setNextState("");
 }
@@ -81,13 +83,11 @@ void GameState::update()
     if (speedCounter % 900 == 0)
     {
         sonicMode = false;
-
     }
 
     if (godCounter % 600 == 0)
     {
         snake->godMode = false;
-        godCounter = 0;
     }
 }
 //--------------------------------------------------------------
@@ -109,6 +109,9 @@ void GameState::keyPressed(int key)
 {
     switch (key) // For letter keys
     {
+    case 'b':
+        powerUpStorage();
+        break;
     case 'u':
         snake->loseFat();
         break;
@@ -163,6 +166,37 @@ void GameState::foodSpawner()
         green = 0;
 
         rotCounter = 0;
+    }
+}
+//--------------------------------------------------------------
+void GameState::powerUpStorage()
+{
+    if (powerMode == SPEED)
+    {
+        sonicMode = true;
+        speedCounter = storeCounter;
+        powerMode = 0;
+    }
+    else if (powerMode == GOD)
+    {
+        snake->godMode = true;
+        godCounter = storeCounter;
+        powerMode = 0;
+    }
+    else
+    {
+        if (sonicMode)
+        {
+            powerMode = SPEED;
+            storeCounter = speedCounter;
+            sonicMode = false;
+        }
+        else if (snake->godMode)
+        {
+            powerMode = GOD;
+            storeCounter = godCounter;
+            snake->godMode = false;
+        }
     }
 }
 //--------------------------------------------------------------
