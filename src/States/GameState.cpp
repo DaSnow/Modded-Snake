@@ -46,6 +46,25 @@ void GameState::update()
     if (snake->getHead()[0] == xPos && snake->getHead()[1] == yPos)
     {
         foodSpawned = false;
+
+        switch (fruitType)
+        {
+        case NORMAL:
+            snake->grow();
+            break;
+        case SPEED:
+            sonicMode = true;
+            speedCounter = 0;
+            break;
+        case DOUBLE:
+            snake->grow();
+            snake->grow();
+            break;
+        case GOD:
+            snake->godMode = true;
+            godCounter = 0;
+            break;
+        }
     }
 
     foodSpawner();
@@ -89,6 +108,8 @@ void GameState::draw()
         green += 3;
     }
     drawFood();
+    if (fruitType == NORMAL && rotCounter % 1800 == 0) // 30 seconds
+        foodSpawned = false;
 }
 //--------------------------------------------------------------
 void GameState::keyPressed(int key)

@@ -14,6 +14,14 @@ enum FruitType
     GOD
 };
 
+enum FruitType
+{
+    NORMAL,
+    SPEED,
+    DOUBLE,
+    GOD
+};
+
 class GameState : public State
 {
 public:
