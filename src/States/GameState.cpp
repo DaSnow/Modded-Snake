@@ -46,7 +46,7 @@ void GameState::update()
     if (snake->getHead()[0] == xPos && snake->getHead()[1] == yPos)
     {
         foodSpawned = false;
-
+        GameState::score +=10;//increase score
         switch (fruitType)
         {
         case NORMAL:
@@ -110,6 +110,11 @@ void GameState::draw()
     drawFood();
     if (fruitType == NORMAL && rotCounter % 1800 == 0) // 30 seconds
         foodSpawned = false;
+    // Display the score on the screen
+    ofSetColor(ofColor::white);
+    string scoreStr = "Score: " + ofToString(GameState::score);
+    ofSetColor(255,255,255);
+    ofDrawBitmapString(scoreStr, 20, 30);
 }
 //--------------------------------------------------------------
 void GameState::keyPressed(int key)
