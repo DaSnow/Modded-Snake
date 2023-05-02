@@ -17,12 +17,11 @@ private:
     int boardSizeWidth, boardSizeHeight;
     bool crashed;
 
-protected:
-
 public:
     std::vector<std::vector<int>> body;
     Direction direction;
     int segmentSize;
+    bool godMode = false;
     
     Snake(int segmentSize, int boardSizeW, int boardSizeH);
     ~Snake();

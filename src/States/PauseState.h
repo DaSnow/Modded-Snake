@@ -3,7 +3,6 @@
 #include "State.h"
 #include "Snake.h"
 #include "ofMain.h"
-#include "GameState.h"
 
 class PauseState : public State
 {

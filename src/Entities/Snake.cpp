@@ -23,6 +23,24 @@ void Snake::update()
 {
     vector<int> oldHead = this->getHead();
 
+    if (!godMode)
+    {
+        if (oldHead[0] == -1 || oldHead[0] == boardSizeWidth || oldHead[1] == -1 || oldHead[1] == boardSizeHeight)
+        {
+            crashed = true;
+            return;
+        }
+    }
+    else
+    {
+        if ((getHead()[0] == 0 && direction == LEFT) || (getHead()[1] == 0 && direction == UP) ||
+            (getHead()[0] == boardSizeWidth - 1 && direction == RIGHT) ||
+            (getHead()[1] == boardSizeHeight - 1 && direction == DOWN)) // checks if snake is headed toward border and stops it
+        {
+            changeDirection(NONE);
+        }
+    }
+
     switch (this->direction)
     {
     case LEFT:
@@ -44,31 +62,30 @@ void Snake::update()
     {
         this->body[0][1] -= 1;
         break;
-    }case NONE:
+    }
+    case NONE:
     {
         break;
     }
     }
 
-    if (oldHead[0] == -1 || oldHead[0] == boardSizeWidth || oldHead[1] == -1 || oldHead[1] == boardSizeHeight)
+    if (direction != NONE) // snake movement
     {
-        crashed = true;
-        return;
+        int prevX = oldHead[0];
+        int prevY = oldHead[1];
+        for (unsigned int i = 1; i < this->body.size(); i++)
+        {
+            int currX = this->body[i][0];
+            int currY = this->body[i][1];
+            this->body[i][0] = prevX;
+            this->body[i][1] = prevY;
+            prevX = currX;
+            prevY = currY;
+        }
     }
 
-    int prevX = oldHead[0];
-    int prevY = oldHead[1];
-    for (unsigned int i = 1; i < this->body.size(); i++)
-    {
-        int currX = this->body[i][0];
-        int currY = this->body[i][1];
-        this->body[i][0] = prevX;
-        this->body[i][1] = prevY;
-        prevX = currX;
-        prevY = currY;
-    }
-
-    checkSelfCrash();
+    if (!godMode)
+        checkSelfCrash();
 }
 
 void Snake::loseFat()

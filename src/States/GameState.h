@@ -6,6 +6,14 @@
 #include "PauseState.h"
 #include "ofSoundPlayer.h"
 
+enum FruitType
+{
+    NORMAL,
+    SPEED,
+    DOUBLE,
+    GOD
+};
+
 class GameState : public State
 {
 public:
@@ -16,6 +24,7 @@ public:
     void draw();
     void keyPressed(int key);
     void foodSpawner();
+    void powerUpStorage();
     void drawFood();
     void drawStartScreen();
     void drawLostScreen();
@@ -24,6 +33,18 @@ public:
     Snake *snake;
 
     bool foodSpawned = false;
+    int fruitType;
+
+    int rotCounter = 0;
+    bool sonicMode = false;
+    int speedCounter = 0;
+    int godCounter = 0;
+
+    int storeCounter;
+    int powerMode;
+
+    int red = 255;
+    int green = 0;
 
     int xPos;
     int yPos;

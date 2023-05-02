@@ -26,6 +26,9 @@ void GameState::reset()
     delete snake;
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
     foodSpawned = false;
+    sonicMode = false;
+    storeCounter = 0;
+    powerMode = 0;
     setFinished(false);
     setNextState("");
     GameState::score=0; //es para que vuelva a 0 cada vez que empieza un juego nuevo
@@ -42,15 +45,37 @@ void GameState::update()
 
     if (snake->getHead()[0] == xPos && snake->getHead()[1] == yPos)
     {
-        snake->grow();
         foodSpawned = false;
-        GameState::score +=10; //increase the score + 10
     }
 
     foodSpawner();
-    if (ofGetFrameNum() % 10 == 0)
+
+    if (ofGetFrameNum() % 1 == 0)
     {
-        snake->update();
+        rotCounter += 1;
+        speedCounter += 1;
+        godCounter += 1;
+    }
+
+    if (sonicMode)
+    {
+        if (ofGetFrameNum() % 5 == 0)
+            snake->update();
+    }
+    else
+    {
+        if (ofGetFrameNum() % 10 == 0)
+            snake->update();
+    }
+
+    if (speedCounter % 900 == 0)
+    {
+        sonicMode = false;
+    }
+
+    if (godCounter % 600 == 0)
+    {
+        snake->godMode = false;
     }
 }
 //--------------------------------------------------------------
@@ -58,17 +83,21 @@ void GameState::draw()
 {
     drawBoardGrid();
     snake->draw();
+    if (fruitType == NORMAL && rotCounter % 60 == 0) // 1 second
+    {
+        red -= 4;
+        green += 3;
+    }
     drawFood();
-    // Display the score on the screen
-    ofSetColor(ofColor::white);
-    string scoreStr = "Score: " + ofToString(GameState::score);
-    ofDrawBitmapString(scoreStr, 20, 30);
 }
 //--------------------------------------------------------------
 void GameState::keyPressed(int key)
 {
     switch (key) // For letter keys
     {
+    case 'b':
+        powerUpStorage();
+        break;
     case 'u':
         snake->loseFat();
         break;
@@ -120,12 +149,63 @@ void GameState::foodSpawner()
             }
         } while (isInSnakeBody);
         foodSpawned = true;
+        fruitType = ofRandom(0, 4); // To be changed to implement activation conditions
+        red = 255;
+        green = 0;
+
+        rotCounter = 0;
+    }
+}
+//--------------------------------------------------------------
+void GameState::powerUpStorage()
+{
+    if (powerMode == SPEED)
+    {
+        sonicMode = true;
+        speedCounter = storeCounter;
+        powerMode = 0;
+    }
+    else if (powerMode == GOD)
+    {
+        snake->godMode = true;
+        godCounter = storeCounter;
+        powerMode = 0;
+    }
+    else
+    {
+        if (sonicMode)
+        {
+            powerMode = SPEED;
+            storeCounter = speedCounter;
+            sonicMode = false;
+        }
+        else if (snake->godMode)
+        {
+            powerMode = GOD;
+            storeCounter = godCounter;
+            snake->godMode = false;
+        }
     }
 }
 //--------------------------------------------------------------
 void GameState::drawFood()
 {
-    ofSetColor(ofColor::red);
+    switch (fruitType) // Set color for different fruit
+    {
+        case NORMAL:
+           ofSetColor(red, green, 0);
+            break;
+        case SPEED:
+           ofSetColor(ofColor::cyan);
+            break;
+        case DOUBLE:
+           ofSetColor(ofColor::plum);
+           break;
+        case GOD:
+           ofSetColor(ofColor::goldenRod);
+            break;
+    }
+
     if (foodSpawned)
     {
         ofDrawRectangle(xPos * cellSize, yPos * cellSize, cellSize, cellSize);
