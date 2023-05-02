@@ -4,6 +4,7 @@
 #include "Snake.h"
 #include "ofMain.h"
 #include "PauseState.h"
+#include "ofSoundPlayer.h"
 
 class GameState : public State
 {
@@ -30,4 +31,6 @@ public:
     int boardSizeWidth, boardSizeHeight;
     int cellSize; // Pixels
     static int score;
+
+    ofSoundPlayer sound;
 };

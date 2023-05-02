@@ -8,6 +8,12 @@ GameState::GameState()
     boardSizeHeight = 36;
     foodSpawned = false;
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
+
+    // aqui para que el sound se mantenga escuchandose:
+    sound.load("sunflower.mp3");
+	sound.setLoop(true); 
+	sound.play();
+
 }
 //--------------------------------------------------------------
 GameState::~GameState()

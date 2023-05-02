@@ -6,6 +6,7 @@
 #include "MenuState.h"
 #include "PauseState.h"
 #include "LoseState.h"
+#include "ofSoundPlayer.h"
 
 class ofApp : public ofBaseApp
 {
