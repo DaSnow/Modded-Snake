@@ -1,4 +1,5 @@
 #include "GameState.h"
+int GameState::score = 0;
 
 //--------------------------------------------------------------
 GameState::GameState()
@@ -6,14 +7,22 @@ GameState::GameState()
     cellSize = 25;
     boardSizeWidth = 64;
     boardSizeHeight = 36;
+    for (int i = 0; i < boardSizeWidth; i++)
+    {
+        gridStatus.push_back({});
+        for (int z = 0; z < boardSizeHeight; z++)
+        {
+            gridStatus[i].push_back({});
+            gridStatus[i][z] = 0;
+        }
+    }
     foodSpawned = false;
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
 
     // aqui para que el sound se mantenga escuchandose:
-    sound.load("sunflower.mp3");
-	sound.setLoop(true); 
-	sound.play();
-
+    // sound.load("sunflower.mp3");
+    sound.setLoop(true);
+    sound.play();
 }
 //--------------------------------------------------------------
 GameState::~GameState()
@@ -26,12 +35,13 @@ void GameState::reset()
     delete snake;
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
     foodSpawned = false;
-    sonicMode = false;
+    sonicMode = true;
     storeCounter = 0;
     powerMode = 0;
+    visitedTilesCords.clear();
+    GameState::score = 0; // es para que vuelva a 0 cada vez que empieza un juego nuevo
     setFinished(false);
     setNextState("");
-    GameState::score=0; //es para que vuelva a 0 cada vez que empieza un juego nuevo
 }
 //--------------------------------------------------------------
 void GameState::update()
@@ -46,7 +56,8 @@ void GameState::update()
     if (snake->getHead()[0] == xPos && snake->getHead()[1] == yPos)
     {
         foodSpawned = false;
-        GameState::score +=10;//increase score
+        visitedTilesCords.clear();
+        GameState::score += 10; // increase score
         switch (fruitType)
         {
         case NORMAL:
@@ -87,6 +98,8 @@ void GameState::update()
             snake->update();
     }
 
+    updateGrid();
+
     if (speedCounter % 900 == 0)
     {
         sonicMode = false;
@@ -98,22 +111,45 @@ void GameState::update()
     }
 }
 //--------------------------------------------------------------
+void GameState::updateGrid()
+{
+    for (int i = 0; i < boardSizeWidth; i++)
+    {
+        for (int z = 0; z < boardSizeHeight; z++)
+        {
+            gridStatus[i][z] = 0;
+            for (unsigned int x = 1; x < snake->body.size(); x++)
+            {
+                if (i == snake->body[x][0] && z == snake->body[x][1])
+                    gridStatus[i][z] = -1;
+            }
+            if (xPos == i && yPos == z)
+                gridStatus[i][z] = 1;
+        }
+    }
+}
+//--------------------------------------------------------------
 void GameState::draw()
 {
     drawBoardGrid();
+    drawPath();
     snake->draw();
+
     if (fruitType == NORMAL && rotCounter % 60 == 0) // 1 second
     {
         red -= 4;
         green += 3;
     }
+
     drawFood();
+
     if (fruitType == NORMAL && rotCounter % 1800 == 0) // 30 seconds
         foodSpawned = false;
+
     // Display the score on the screen
     ofSetColor(ofColor::white);
     string scoreStr = "Score: " + ofToString(GameState::score);
-    ofSetColor(255,255,255);
+    ofSetColor(255, 255, 255);
     ofDrawBitmapString(scoreStr, 20, 30);
 }
 //--------------------------------------------------------------
@@ -121,8 +157,14 @@ void GameState::keyPressed(int key)
 {
     switch (key) // For letter keys
     {
+    case 'a':
+        GameState::score += 10;
+        break;
     case 'b':
         powerUpStorage();
+        break;
+    case 'g':
+        findPath();
         break;
     case 'u':
         snake->loseFat();
@@ -132,8 +174,6 @@ void GameState::keyPressed(int key)
         this->setFinished(true);
         return;
         break;
-    case 'a':
-        GameState::score +=10;
     }
 
     switch (key) // For arrow keys
@@ -153,6 +193,15 @@ void GameState::keyPressed(int key)
     case NONE:
         return;
         break;
+    }
+}
+//--------------------------------------------------------------
+void GameState::drawPath()
+{
+    ofSetColor(ofColor::ghostWhite);
+    for (unsigned int i = 0; i < visitedTilesCords.size(); i++)
+    {
+        ofDrawRectangle(visitedTilesCords[i][0] * cellSize, visitedTilesCords[i][1] * cellSize, cellSize, cellSize);
     }
 }
 //--------------------------------------------------------------
@@ -181,6 +230,153 @@ void GameState::foodSpawner()
 
         rotCounter = 0;
     }
+}
+//--------------------------------------------------------------
+vector<int> GameState::findPath()
+{
+    visitedTilesCords.clear();
+    return findPathHelper(snake->getHead()[0], snake->getHead()[1]);
+}
+
+vector<int> GameState::findPathHelper(int xCord, int yCord)
+{
+    vector<int> position = {xCord, yCord};
+
+    if (xCord < 0 || yCord < 0 || xCord > boardSizeWidth - 1 || yCord > boardSizeHeight - 1 || gridStatus[xCord][yCord] == -1)
+        return {};
+
+    if (gridStatus[xCord][yCord] == 1)
+        return position;
+
+    vector<int> res = {};
+
+    gridStatus[xCord][yCord] = -1;
+
+    int yDistance = abs(yPos - yCord);
+    int xDistance = abs(xPos - xCord);
+
+    vector<string> ClosestPoint;
+
+    if (yDistance == 0 || (xDistance != 0 && xDistance < yDistance))
+    {
+        if (xPos < snake->getHead()[0]) // snake on right of fruit
+        {
+            ClosestPoint.push_back("WEST");
+            if (yPos < snake->getHead()[1]) // snake above fruit
+            {
+                ClosestPoint.push_back("NORTH");
+                ClosestPoint.push_back("EAST");
+                ClosestPoint.push_back("SOUTH");
+            }
+            else // snake below fruit
+            {
+                ClosestPoint.push_back("SOUTH");
+                ClosestPoint.push_back("EAST");
+                ClosestPoint.push_back("NORTH");
+            }
+        }
+        else // snake on left of fruit
+        {
+            ClosestPoint.push_back("EAST");
+            if (yPos < snake->getHead()[1]) // snake above fruit
+            {
+                ClosestPoint.push_back("NORTH");
+                ClosestPoint.push_back("WEST");
+                ClosestPoint.push_back("SOUTH");
+            }
+            else // snake below fruit
+            {
+                ClosestPoint.push_back("SOUTH");
+                ClosestPoint.push_back("WEST");
+                ClosestPoint.push_back("NORTH");
+            }
+        }
+    }
+    // else
+    else if (xDistance == 0 || (yDistance != 0 && yDistance < xDistance))
+    {
+        if (yPos < snake->getHead()[1]) // snake above fruit
+        {
+            ClosestPoint.push_back("NORTH");
+            if (xPos < snake->getHead()[0]) // snake to right of fruit
+            {
+                ClosestPoint.push_back("WEST");
+                ClosestPoint.push_back("SOUTH");
+                ClosestPoint.push_back("EAST");
+            }
+            else // snake to left of fruit
+            {
+                ClosestPoint.push_back("EAST");
+                ClosestPoint.push_back("SOUTH");
+                ClosestPoint.push_back("WEST");
+            }
+        }
+        else // snake below fruit
+        {
+            ClosestPoint.push_back("SOUTH");
+            if (xPos < snake->getHead()[0]) // snake to right of fruit
+            {
+                ClosestPoint.push_back("WEST");
+                ClosestPoint.push_back("NORTH");
+                ClosestPoint.push_back("EAST");
+            }
+            else // snake to left of fruit
+            {
+                ClosestPoint.push_back("EAST");
+                ClosestPoint.push_back("NORTH");
+                ClosestPoint.push_back("WEST");
+            }
+        }
+    }
+
+    for (auto codeword : ClosestPoint)
+    {
+        if (codeword == "EAST")
+        {
+            res = findPathHelper(xCord + 1, yCord); // right
+
+            if (res.size() > 0)
+            {
+                visitedTilesCords.push_back(position);
+                return position;
+            }
+        }
+
+        if (codeword == "SOUTH")
+        {
+            res = findPathHelper(xCord, yCord + 1); // down
+
+            if (res.size() > 0)
+            {
+                visitedTilesCords.push_back(position);
+                return position;
+            }
+        }
+
+        if (codeword == "WEST")
+        {
+            res = findPathHelper(xCord - 1, yCord); // left
+
+            if (res.size() > 0)
+            {
+                visitedTilesCords.push_back(position);
+                return position;
+            }
+        }
+
+        if (codeword == "NORTH")
+        {
+            res = findPathHelper(xCord, yCord - 1); // up
+
+            if (res.size() > 0)
+            {
+                visitedTilesCords.push_back(position);
+                return position;
+            }
+        }
+    }
+
+    return {};
 }
 //--------------------------------------------------------------
 void GameState::powerUpStorage()
@@ -218,18 +414,18 @@ void GameState::drawFood()
 {
     switch (fruitType) // Set color for different fruit
     {
-        case NORMAL:
-           ofSetColor(red, green, 0);
-            break;
-        case SPEED:
-           ofSetColor(ofColor::cyan);
-            break;
-        case DOUBLE:
-           ofSetColor(ofColor::plum);
-           break;
-        case GOD:
-           ofSetColor(ofColor::goldenRod);
-            break;
+    case NORMAL:
+        ofSetColor(red, green, 0);
+        break;
+    case SPEED:
+        ofSetColor(ofColor::cyan);
+        break;
+    case DOUBLE:
+        ofSetColor(ofColor::plum);
+        break;
+    case GOD:
+        ofSetColor(ofColor::goldenRod);
+        break;
     }
 
     if (foodSpawned)
@@ -268,5 +464,3 @@ void GameState::drawBoardGrid()
     // }
 }
 //--------------------------------------------------------------
-
-int GameState::score=0;

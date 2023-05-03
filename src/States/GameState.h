@@ -14,8 +14,6 @@ enum FruitType
     GOD
 };
 
-
-
 class GameState : public State
 {
 public:
@@ -28,11 +26,17 @@ public:
     void foodSpawner();
     void powerUpStorage();
     void drawFood();
+    void drawPath();
+    void updateGrid();
+    vector<int> findPath();
+    vector<int> findPathHelper(int xCord, int yCord);
     void drawStartScreen();
     void drawLostScreen();
     void drawBoardGrid();
 
     Snake *snake;
+    vector<vector<int>> gridStatus;
+    vector<vector<int>> visitedTilesCords;
 
     bool foodSpawned = false;
     int fruitType;
