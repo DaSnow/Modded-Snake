@@ -51,4 +51,7 @@ public:
     {
         return this->body;
     }
+    void setCrashed(bool crashed){
+        this->crashed = crashed;
+    }
 };
