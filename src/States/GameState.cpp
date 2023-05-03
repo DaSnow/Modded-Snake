@@ -8,11 +8,20 @@ GameState::GameState()
     boardSizeHeight = 36;
     foodSpawned = false;
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
+    // bregando con las rocas:
+    rockImage.load("rockimage.png");
+    for(int i=0;i<ofRandom(15,20);i++){
+        rockX = ofRandom(1,boardSizeWidth-1);
+        rockY = ofRandom(1,boardSizeHeight-1);
+        staticEntity.push_back(new StaticEntity(rockX, rockY,cellSize, cellSize, rockImage));
+    }
 
     // aqui para que el sound se mantenga escuchandose:
     sound.load("sunflower.mp3");
 	sound.setLoop(true); 
 	sound.play();
+    // aqui le doy load a la foto
+    rockImage.load("rockimage.png");
 
 }
 //--------------------------------------------------------------
@@ -78,13 +87,13 @@ void GameState::update()
 
     if (sonicMode)
     {
-        if (ofGetFrameNum() % 5 == 0)
-            snake->update();
-    }
+        // if (ofGetFrameNum() % 5 == 0)
+        //     snake->update();
+    } 
     else
     {
-        if (ofGetFrameNum() % 10 == 0)
-            snake->update();
+        // if (ofGetFrameNum() % 10 == 0)
+        //     snake->update();
     }
 
     if (speedCounter % 900 == 0)
@@ -96,6 +105,14 @@ void GameState::update()
     {
         snake->godMode = false;
     }
+
+    if(ofGetFrameNum() % 10 == 0) {
+        snake->update();
+    }
+    for(StaticEntity* rocas: staticEntity){
+        rocas->update(snake);
+    }
+
 }
 //--------------------------------------------------------------
 void GameState::draw()
@@ -115,6 +132,10 @@ void GameState::draw()
     string scoreStr = "Score: " + ofToString(GameState::score);
     ofSetColor(255,255,255);
     ofDrawBitmapString(scoreStr, 20, 30);
+
+    for(auto roca: staticEntity){
+        roca->draw();
+    }
 }
 //--------------------------------------------------------------
 void GameState::keyPressed(int key)

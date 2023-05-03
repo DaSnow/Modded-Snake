@@ -5,6 +5,7 @@
 #include "ofMain.h"
 #include "PauseState.h"
 #include "ofSoundPlayer.h"
+#include "StaticEntity.h"
 
 enum FruitType
 {
@@ -31,6 +32,7 @@ public:
     void drawStartScreen();
     void drawLostScreen();
     void drawBoardGrid();
+    void drawRocks();
 
     Snake *snake;
 
@@ -50,10 +52,15 @@ public:
 
     int xPos;
     int yPos;
+    int rockX;
+    int rockY;
 
     int boardSizeWidth, boardSizeHeight;
     int cellSize; // Pixels
     static int score;
 
     ofSoundPlayer sound;
+    ofImage rockImage;
+    //vector para las rocas:
+    std::vector<StaticEntity*> staticEntity;
 };
