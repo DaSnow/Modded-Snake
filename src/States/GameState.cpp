@@ -23,12 +23,7 @@ GameState::GameState()
 
     // bregando con las rocas:
     rockImage.load("rockimage.png");
-    for (int i = 0; i < ofRandom(15, 20); i++)
-    {
-        rockX = ofRandom(0, boardSizeWidth);
-        rockY = ofRandom(0, boardSizeHeight);
-        staticEntity.push_back(new StaticEntity(rockX, rockY, cellSize, cellSize, rockImage));
-    }
+    randomizeEntites();
 
     // aqui para que el sound se mantenga escuchandose:
     sound.load("sunflower.mp3");
@@ -47,6 +42,7 @@ void GameState::reset()
 {
     delete snake;
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
+    randomizeEntites();
     foodSpawned = false;
     sonicMode = true;
     storeCounter = 0;
@@ -238,6 +234,29 @@ void GameState::drawPath()
     }
 }
 //--------------------------------------------------------------
+void GameState::randomizeEntites()
+{
+    staticEntity.clear();
+    for (int i = 0; i < ofRandom(15, 20); i++)
+    {
+        bool isInSnakeBody;
+        do
+        {
+            isInSnakeBody = false;
+            rockX = ofRandom(0, boardSizeWidth);
+            rockY = ofRandom(0, boardSizeHeight);
+            for (unsigned int i = 0; i < snake->getBody().size(); i++)
+            {
+                if (xPos == snake->getBody()[i][0] and yPos == snake->getBody()[i][1])
+                {
+                    isInSnakeBody = true;
+                }
+            }
+        } while (isInSnakeBody);
+        staticEntity.push_back(new StaticEntity(rockX, rockY, cellSize, cellSize, rockImage));
+    }
+}
+//--------------------------------------------------------------
 void GameState::foodSpawner()
 {
     if (!foodSpawned)
@@ -254,6 +273,11 @@ void GameState::foodSpawner()
                 {
                     isInSnakeBody = true;
                 }
+            }
+            for (auto rock : staticEntity)
+            {
+                if (xPos == rock->getX() && yPos == rock->getY())
+                    isInSnakeBody = true;
             }
         } while (isInSnakeBody);
         foodSpawned = true;
