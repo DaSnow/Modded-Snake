@@ -37,6 +37,7 @@ public:
     void drawRocks();
 
     Snake *snake;
+    
     vector<vector<int>> gridStatus;
     vector<vector<int>> visitedTilesCords;
 
@@ -63,8 +64,9 @@ public:
     int cellSize; // Pixels
     static int score;
 
-    ofSoundPlayer sound;
     ofImage rockImage;
+
     //vector para las rocas:
-    std::vector<StaticEntity*> staticEntity;
+    vector<StaticEntity*> staticEntity;
+    ofSoundPlayer sound;
 };

@@ -7,6 +7,7 @@ GameState::GameState()
     cellSize = 25;
     boardSizeWidth = 64;
     boardSizeHeight = 36;
+
     for (int i = 0; i < boardSizeWidth; i++)
     {
         gridStatus.push_back({});
@@ -16,23 +17,25 @@ GameState::GameState()
             gridStatus[i][z] = 0;
         }
     }
+
     foodSpawned = false;
     snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
+
     // bregando con las rocas:
     rockImage.load("rockimage.png");
-    for(int i=0;i<ofRandom(15,20);i++){
-        rockX = ofRandom(1,boardSizeWidth-1);
-        rockY = ofRandom(1,boardSizeHeight-1);
-        staticEntity.push_back(new StaticEntity(rockX, rockY,cellSize, cellSize, rockImage));
+    for (int i = 0; i < ofRandom(15, 20); i++)
+    {
+        rockX = ofRandom(0, boardSizeWidth);
+        rockY = ofRandom(0, boardSizeHeight);
+        staticEntity.push_back(new StaticEntity(rockX, rockY, cellSize, cellSize, rockImage));
     }
 
     // aqui para que el sound se mantenga escuchandose:
     sound.load("sunflower.mp3");
-	sound.setLoop(true); 
-	sound.play();
+    sound.setLoop(true);
+    sound.play();
     // aqui le doy load a la foto
     rockImage.load("rockimage.png");
-
 }
 //--------------------------------------------------------------
 GameState::~GameState()
@@ -101,7 +104,7 @@ void GameState::update()
     {
         // if (ofGetFrameNum() % 5 == 0)
         //     snake->update();
-    } 
+    }
     else
     {
         // if (ofGetFrameNum() % 10 == 0)
@@ -120,13 +123,15 @@ void GameState::update()
         snake->godMode = false;
     }
 
-    if(ofGetFrameNum() % 10 == 0) {
+    if (ofGetFrameNum() % 10 == 0)
+    {
         snake->update();
     }
-    for(StaticEntity* rocas: staticEntity){
+
+    for (StaticEntity *rocas : staticEntity)
+    {
         rocas->update(snake);
     }
-
 }
 //--------------------------------------------------------------
 void GameState::updateGrid()
@@ -139,6 +144,11 @@ void GameState::updateGrid()
             for (unsigned int x = 1; x < snake->body.size(); x++)
             {
                 if (i == snake->body[x][0] && z == snake->body[x][1])
+                    gridStatus[i][z] = -1;
+            }
+            for (auto rock : staticEntity)
+            {
+                if (i == rock->getX() && z == rock->getY())
                     gridStatus[i][z] = -1;
             }
             if (xPos == i && yPos == z)
@@ -170,7 +180,8 @@ void GameState::draw()
     ofSetColor(255, 255, 255);
     ofDrawBitmapString(scoreStr, 20, 30);
 
-    for(auto roca: staticEntity){
+    for (auto roca : staticEntity)
+    {
         roca->draw();
     }
 }
@@ -284,13 +295,13 @@ vector<int> GameState::findPathHelper(int xCord, int yCord)
         if (xPos < snake->getHead()[0]) // snake on right of fruit
         {
             ClosestPoint.push_back("WEST");
-            if (yPos < snake->getHead()[1]) // snake above fruit
+            if (yPos < snake->getHead()[1]) // snake below fruit
             {
                 ClosestPoint.push_back("NORTH");
                 ClosestPoint.push_back("EAST");
                 ClosestPoint.push_back("SOUTH");
             }
-            else // snake below fruit
+            else // snake above fruit
             {
                 ClosestPoint.push_back("SOUTH");
                 ClosestPoint.push_back("EAST");
@@ -300,13 +311,13 @@ vector<int> GameState::findPathHelper(int xCord, int yCord)
         else // snake on left of fruit
         {
             ClosestPoint.push_back("EAST");
-            if (yPos < snake->getHead()[1]) // snake above fruit
+            if (yPos < snake->getHead()[1]) // snake below fruit
             {
                 ClosestPoint.push_back("NORTH");
                 ClosestPoint.push_back("WEST");
                 ClosestPoint.push_back("SOUTH");
             }
-            else // snake below fruit
+            else // snake above fruit
             {
                 ClosestPoint.push_back("SOUTH");
                 ClosestPoint.push_back("WEST");
@@ -314,10 +325,9 @@ vector<int> GameState::findPathHelper(int xCord, int yCord)
             }
         }
     }
-    // else
     else if (xDistance == 0 || (yDistance != 0 && yDistance < xDistance))
     {
-        if (yPos < snake->getHead()[1]) // snake above fruit
+        if (yPos < snake->getHead()[1]) // snake below fruit
         {
             ClosestPoint.push_back("NORTH");
             if (xPos < snake->getHead()[0]) // snake to right of fruit
@@ -333,7 +343,7 @@ vector<int> GameState::findPathHelper(int xCord, int yCord)
                 ClosestPoint.push_back("WEST");
             }
         }
-        else // snake below fruit
+        else // snake above fruit
         {
             ClosestPoint.push_back("SOUTH");
             if (xPos < snake->getHead()[0]) // snake to right of fruit

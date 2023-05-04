@@ -13,6 +13,3 @@ void Entity::draw(){
     ofSetColor (255,255,255);
     sprite.draw(x, y, width, height);
 }
-
-
-
