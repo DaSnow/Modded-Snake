@@ -1,7 +1,7 @@
 #include "Snake.h"
 #include "ofMain.h"
 
-Snake::Snake(int segmentSize, int boardSizeW, int boardSizeH)
+Snake::Snake(int segmentSize, int boardSizeW, int boardSizeH, vector<StaticEntity *> staticEntities)
 {
     body.push_back({8, 9});
     body.push_back({9, 9});
@@ -12,6 +12,7 @@ Snake::Snake(int segmentSize, int boardSizeW, int boardSizeH)
     this->segmentSize = segmentSize;
     this->boardSizeWidth = boardSizeW;
     this->boardSizeHeight = boardSizeH;
+    this->staticEntities = staticEntities;
 }
 
 Snake::~Snake()
@@ -30,6 +31,14 @@ void Snake::update()
             crashed = true;
             return;
         }
+        for (auto rock : staticEntities)
+        {
+            if (oldHead[0] == rock->getX() && oldHead[1] == rock->getY())
+            {
+                crashed = true;
+                return;
+            }
+        }
     }
     else
     {
@@ -38,6 +47,38 @@ void Snake::update()
             (getHead()[1] == boardSizeHeight - 1 && direction == DOWN)) // checks if snake is headed toward border and stops it
         {
             changeDirection(NONE);
+        }
+        for (auto rock : staticEntities)
+        {
+            switch (direction)
+            {
+            case RIGHT:
+                if (oldHead[0] + 1 == rock->getX() && oldHead[1] == rock->getY())
+                {
+                    changeDirection(NONE);
+                }
+                break;
+            case LEFT:
+                if (oldHead[0] - 1 == rock->getX() && oldHead[1] == rock->getY())
+                {
+                    changeDirection(NONE);
+                }
+                break;
+            case UP:
+                if (oldHead[0] == rock->getX() && oldHead[1] - 1 == rock->getY())
+                {
+                    changeDirection(NONE);
+                }
+                break;
+            case DOWN:
+                if (oldHead[0] == rock->getX() && oldHead[1] + 1 == rock->getY())
+                {
+                    changeDirection(NONE);
+                }
+                break;
+            case NONE:
+                break;
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <StaticEntity.h>
 
 enum Direction
 {
@@ -12,7 +13,6 @@ enum Direction
 
 class Snake
 {
-
 private:
     int boardSizeWidth, boardSizeHeight;
     bool crashed;
@@ -21,9 +21,10 @@ public:
     std::vector<std::vector<int>> body;
     Direction direction;
     int segmentSize;
+    vector<StaticEntity *> staticEntities;
     bool godMode = false;
-    
-    Snake(int segmentSize, int boardSizeW, int boardSizeH);
+
+    Snake(int segmentSize, int boardSizeW, int boardSizeH, vector<StaticEntity *> staticEntities);
     ~Snake();
 
     void update();
@@ -51,7 +52,8 @@ public:
     {
         return this->body;
     }
-    void setCrashed(bool crashed){
+    void setCrashed(bool crashed)
+    {
         this->crashed = crashed;
     }
 };

@@ -17,23 +17,18 @@ GameState::GameState()
             gridStatus[i][z] = 0;
         }
     }
-
     foodSpawned = false;
-    snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
 
     // bregando con las rocas:
     rockImage.load("rockimage.png");
-    for (int i = 0; i < ofRandom(15, 20); i++)
-    {
-        rockX = ofRandom(0, boardSizeWidth);
-        rockY = ofRandom(0, boardSizeHeight);
-        staticEntity.push_back(new StaticEntity(rockX, rockY, cellSize, cellSize, rockImage));
-    }
+    randomizeEntites();
+
+    snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight, staticEntity);
 
     // aqui para que el sound se mantenga escuchandose:
     sound.load("sunflower.mp3");
     sound.setLoop(true);
-    sound.play();
+        sound.play();
     // aqui le doy load a la foto
     rockImage.load("rockimage.png");
 }
@@ -46,9 +41,10 @@ GameState::~GameState()
 void GameState::reset()
 {
     delete snake;
-    snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight);
+    randomizeEntites();
+    snake = new Snake(cellSize, boardSizeWidth, boardSizeHeight, staticEntity);
     foodSpawned = false;
-    sonicMode = true;
+    sonicMode = false;
     storeCounter = 0;
     powerMode = 0;
     visitedTilesCords.clear();
@@ -102,13 +98,13 @@ void GameState::update()
 
     if (sonicMode)
     {
-        // if (ofGetFrameNum() % 5 == 0)
-        //     snake->update();
+        if (ofGetFrameNum() % 5 == 0)
+            snake->update();
     }
     else
     {
-        // if (ofGetFrameNum() % 10 == 0)
-        //     snake->update();
+        if (ofGetFrameNum() % 10 == 0)
+            snake->update();
     }
 
     updateGrid();
@@ -121,16 +117,6 @@ void GameState::update()
     if (godCounter % 600 == 0)
     {
         snake->godMode = false;
-    }
-
-    if (ofGetFrameNum() % 10 == 0)
-    {
-        snake->update();
-    }
-
-    for (StaticEntity *rocas : staticEntity)
-    {
-        rocas->update(snake);
     }
 }
 //--------------------------------------------------------------
@@ -172,7 +158,11 @@ void GameState::draw()
     drawFood();
 
     if (fruitType == NORMAL && rotCounter % 1800 == 0) // 30 seconds
+    {
         foodSpawned = false;
+        foodSpawner();
+        findPath();
+    }
 
     // Display the score on the screen
     ofSetColor(ofColor::white);
@@ -188,6 +178,7 @@ void GameState::draw()
 //--------------------------------------------------------------
 void GameState::keyPressed(int key)
 {
+    // ofgetEla
     switch (key) // For letter keys
     {
     case 'a':
@@ -238,6 +229,26 @@ void GameState::drawPath()
     }
 }
 //--------------------------------------------------------------
+void GameState::randomizeEntites()
+{
+    staticEntity.clear();
+    for (int i = 0; i < ofRandom(15, 20); i++)
+    {
+        bool isInSnakeBody;
+        do
+        {
+            isInSnakeBody = false;
+            rockX = ofRandom(0, boardSizeWidth);
+            rockY = ofRandom(0, boardSizeHeight);
+            if ((xPos == 8 || xPos == 9 || xPos == 10 || xPos == 11) and yPos == 9)
+            {
+                isInSnakeBody = true;
+            }
+        } while (isInSnakeBody);
+        staticEntity.push_back(new StaticEntity(rockX, rockY, cellSize, cellSize, rockImage));
+    }
+}
+//--------------------------------------------------------------
 void GameState::foodSpawner()
 {
     if (!foodSpawned)
@@ -254,6 +265,11 @@ void GameState::foodSpawner()
                 {
                     isInSnakeBody = true;
                 }
+            }
+            for (auto rock : staticEntity)
+            {
+                if (xPos == rock->getX() && yPos == rock->getY())
+                    isInSnakeBody = true;
             }
         } while (isInSnakeBody);
         foodSpawned = true;

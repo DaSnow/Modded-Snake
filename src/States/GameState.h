@@ -68,5 +68,6 @@ public:
 
     //vector para las rocas:
     vector<StaticEntity*> staticEntity;
+    void randomizeEntites();
     ofSoundPlayer sound;
 };
