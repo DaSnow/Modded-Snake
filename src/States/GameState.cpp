@@ -257,7 +257,19 @@ void GameState::foodSpawner()
             }
         } while (isInSnakeBody);
         foodSpawned = true;
-        fruitType = ofRandom(0, 4); // To be changed to implement activation conditions
+
+    if (score == 0){
+    fruitType = NORMAL;
+    } else if (score % 150 == 0) {
+    fruitType = GOD;
+    } else if (score % 100 == 0) {
+        fruitType = DOUBLE;
+    } else if (score % 50 == 0) {
+        fruitType = SPEED;
+    } else {
+        fruitType = NORMAL;
+}
+        // fruitType = ofRandom(0, 4); // To be changed to implement activation conditions
         red = 255;
         green = 0;
 
