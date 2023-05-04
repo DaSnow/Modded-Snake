@@ -28,7 +28,7 @@ GameState::GameState()
     // aqui para que el sound se mantenga escuchandose:
     sound.load("sunflower.mp3");
     sound.setLoop(true);
-        sound.play();
+    sound.play();
     // aqui le doy load a la foto
     rockImage.load("rockimage.png");
 }
@@ -169,6 +169,47 @@ void GameState::draw()
     string scoreStr = "Score: " + ofToString(GameState::score);
     ofSetColor(255, 255, 255);
     ofDrawBitmapString(scoreStr, 20, 30);
+
+    string crtPow = "None";
+    int crtCounter = 0;
+
+    if (sonicMode && snake->godMode)
+    {
+        crtPow = "Speed and God";
+        int s = (900 - speedCounter) / 60.0;
+        int g = (600 - godCounter) / 60.0;
+        crtCounter = (speedCounter > godCounter) ? ((900 - speedCounter) / 60.0) : (600 - godCounter) / 60.0;
+    }
+    else if (sonicMode)
+    {
+        crtPow = "Speed";
+        crtCounter = (900 - speedCounter) / 60.0;
+    }
+    else if (snake->godMode)
+    {
+        crtPow = "God";
+        crtCounter = (600 - godCounter) / 60.0;
+    }
+
+    ofDrawBitmapString("Current power up: " + crtPow, 20, 45);                // Current power up
+    ofDrawBitmapString("Current power up: " + to_string(crtCounter), 20, 60); // Current power up counter
+
+    string strPow = "None";
+    int strCounter = 0;
+
+    if (powerMode == SPEED)
+    {
+        strPow = "Speed";
+        strCounter = (900 - storeCounter) / 60.0;
+    }
+    else if (powerMode == GOD)
+    {
+        strPow = "God";
+        strCounter = (600 - storeCounter) / 60.0;
+    }
+
+    ofDrawBitmapString("Stored power up: " + strPow, 20, 75);                // Stored power up
+    ofDrawBitmapString("Stored power up: " + to_string(strCounter), 20, 90); // Stored power up counter
 
     for (auto roca : staticEntity)
     {
